@@ -80,27 +80,24 @@ func BasicAuth(w http.ResponseWriter, r *http.Request){
 func Translator(w http.ResponseWriter, r *http.Request) {
   if strings.Contains(r.Header.Get("Content-Type"), "json") == true{
   		jsonBinInfo, err := ioutil.ReadAll(r.Body)
-  		var f interface{}
   		r.Body.Close()
   		if err != nil {
   			fmt.Fprintln(w, err)
   		}
 
-  		Jerr := json.Unmarshal(jsonBinInfo, &f)
-  		if Jerr != nil {
-  			fmt.Fprintln(w, Jerr)
-  		}
-      jsondata := f.(map[string]interface{})
-      fmt.Fprint(w,jsondata)
-      return
-      (*r).Header.Add("InComingData",fmt.Sprint(jsondata))
+      (*r).Header.Add("InComingData",fmt.Sprintf("%s",jsonBinInfo))
 
   }else if strings.Contains(r.Header.Get("Content-Type"), "form-urlencoded") == true{
 		if err := r.ParseForm(); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-    (*r).Header.Add("InComingData",fmt.Sprint(r.Form))
+    m:=make(map[string]string)
+    for i, v:= range r.Form{
+      m[i]=v[0]
+    }
+    b,_:=json.Marshal(m)
+    (*r).Header.Add("InComingData",fmt.Sprintf("%s",b))
   }else{
     http.Error(w,"Invalid Input Request", http.StatusBadRequest)
   }
