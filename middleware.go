@@ -17,17 +17,8 @@ var key1 = []byte("5916569511133184")
 var key2 = []byte("4776259720577024")
 var CookieHandler = securecookie.New(key1, key2)
 
-type loggedinusers struct {
-	UID    int64
-	SID int64
-	Extime    int64
-}
-
-type Users struct {
-  Username string
-  Password string
-  Userid   int64
-}
+type loggedinusers tools.Loggedinusers
+type users tools.Users 
 
 func SessionAuth(w http.ResponseWriter, r *http.Request){
   var userid string
@@ -49,7 +40,7 @@ func SessionAuth(w http.ResponseWriter, r *http.Request){
   if(userid=="0" || userid==""){
     http.Error(w, err.Error(), http.StatusUnauthorized)
   }else{
-    (*r).Header.Add("UID",userid)
+    (*r).Header.Add("UserID",userid)
   }
 
   return
@@ -64,14 +55,14 @@ func BasicAuth(w http.ResponseWriter, r *http.Request){
     Filter("Username =", username).
     Filter("Password =", password)
 
-  var currentuser []Users
+  var currentuser []users
   qClient_user.GetAll(c, &currentuser)
-  userid := strconv.FormatInt(currentuser[0].Userid, 10)
+  userid := strconv.FormatInt(currentuser[0].UID, 10)
 
   if(userid=="0" || userid==""){
     http.Error(w,"Unauthorized", http.StatusUnauthorized)
   }else{
-    (*r).Header.Add("UID",userid)
+    (*r).Header.Add("UserID",userid)
   }
 
   return
