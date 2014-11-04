@@ -42,7 +42,7 @@ func SessionAuth(w http.ResponseWriter, r *http.Request){
 			_, err := qClient_user.GetAll(c, &currentuser)
 			if err != nil{
 				fmt.Fprint(w,err)
-				return
+				return 
 			}
 			userid = strconv.FormatInt(currentuser[0].UID, 10)
 		}
@@ -51,9 +51,8 @@ func SessionAuth(w http.ResponseWriter, r *http.Request){
   if(userid=="0" || userid==""){
     http.Error(w, err.Error(), http.StatusUnauthorized)
   }else{
-    r.Header.Set("UserID",userid)
+    (*r).Header.Set("UserID",userid)
   }
-
   return
 }
 
