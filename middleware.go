@@ -31,10 +31,11 @@ func SessionAuth(w http.ResponseWriter, r *http.Request){
   var userid string
 	c := appengine.NewContext(r)
   	cookie, err := r.Cookie("session")
+  	var sessionid string
 	if err == nil {
 		cookieValue := make(map[string]string)
 		if err = CookieHandler.Decode("session", cookie.Value, &cookieValue); err == nil {
-			sessionid := cookieValue["sessionid"]
+			sessionid = cookieValue["sessionid"]
 			sid, _ := strconv.ParseInt(sessionid, 10, 64)
 			qClient_user := datastore.NewQuery("login").
 								Filter("SID =", sid)
@@ -51,6 +52,7 @@ func SessionAuth(w http.ResponseWriter, r *http.Request){
   if(userid=="0" || userid==""){
     http.Error(w, err.Error(), http.StatusUnauthorized)
   }else{
+  	(*r).Header.Set("SessionID",sessionid)
     (*r).Header.Set("UserID",userid)
   }
   return
