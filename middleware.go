@@ -55,6 +55,7 @@ func SessionAuth(w http.ResponseWriter, r *http.Request){
   	(*r).Header.Set("SessionID",sessionid)
     (*r).Header.Set("UserID",userid)
   }
+  
   return
 }
 
