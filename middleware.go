@@ -13,19 +13,12 @@ import (
   "vidao/martini-tools"
   )
 
-/*type Loggedinusers struct {
-	UID    int64
-	SID    int64
-	Extime  int64
-}*/
-
-
 var key1 = []byte("5916569511133184")
 var key2 = []byte("4776259720577024")
 var CookieHandler = securecookie.New(key1, key2)
 
 type loggedinusers tools.Loggedinusers
-type users tools.Users 
+type users tools.Users
 
 func SessionAuth(w http.ResponseWriter, r *http.Request){
   var userid string
@@ -43,7 +36,7 @@ func SessionAuth(w http.ResponseWriter, r *http.Request){
 			_, err := qClient_user.GetAll(c, &currentuser)
 			if err != nil{
 				fmt.Fprint(w,err)
-				return 
+				return
 			}
 			userid = strconv.FormatInt(currentuser[0].UID, 10)
 		}
