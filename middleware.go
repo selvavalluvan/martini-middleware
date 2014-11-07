@@ -29,7 +29,7 @@ func SessionAuth(session sessions.Session,w http.ResponseWriter, r *http.Request
 	_, err := qClient_user.GetAll(c, &currentuser)
 	if err != nil{
 		fmt.Fprint(w,err)
-		return 
+		return
 	}
 	userid := strconv.FormatInt(currentuser[0].UID, 10)
 
