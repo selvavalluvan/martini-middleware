@@ -9,54 +9,37 @@ import (
   "io/ioutil"
   "strings"
   "encoding/json"
-  "github.com/gorilla/securecookie"
+  //"github.com/gorilla/securecookie"
+  "github.com/martini-contrib/sessions"
   "vidao/martini-tools"
   )
-
-/*type Loggedinusers struct {
-	UID    int64
-	SID    int64
-	Extime  int64
-}*/
-
-
-var key1 = []byte("5916569511133184")
-var key2 = []byte("4776259720577024")
-var CookieHandler = securecookie.New(key1, key2)
 
 type loggedinusers tools.Loggedinusers
 type users tools.Users 
 
-func SessionAuth(w http.ResponseWriter, r *http.Request){
-  var userid string
-	c := appengine.NewContext(r)
-  	cookie, err := r.Cookie("session")
-  	var sessionid string
-	if err == nil {
-		cookieValue := make(map[string]string)
-		if err = CookieHandler.Decode("session", cookie.Value, &cookieValue); err == nil {
-			sessionid = cookieValue["sessionid"]
-			sid, _ := strconv.ParseInt(sessionid, 10, 64)
-			qClient_user := datastore.NewQuery("login").
-								Filter("SID =", sid)
-			var currentuser []loggedinusers
-			_, err := qClient_user.GetAll(c, &currentuser)
-			if err != nil{
-				fmt.Fprint(w,err)
-				return 
-			}
-			userid = strconv.FormatInt(currentuser[0].UID, 10)
-		}
-	}
 
-  if(userid=="0" || userid==""){
-    http.Error(w, err.Error(), http.StatusUnauthorized)
-  }else{
-  	(*r).Header.Set("SessionID",sessionid)
-    (*r).Header.Set("UserID",userid)
-  }
-  
-  return
+
+func SessionAuth(session sessions.Session,w http.ResponseWriter, r *http.Request){
+	c := appengine.NewContext(r)
+	sessionid :=session.Get("SID")
+	sid, _ := strconv.ParseInt(sessionid.(string), 10, 64)
+	qClient_user := datastore.NewQuery("login").
+						Filter("SID =", sid)
+	var currentuser []loggedinusers
+	_, err := qClient_user.GetAll(c, &currentuser)
+	if err != nil{
+		fmt.Fprint(w,err)
+		return 
+	}
+	userid := strconv.FormatInt(currentuser[0].UID, 10)
+
+	if(userid=="0" || userid==""){
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+	}else{
+		(*r).Header.Set("SessionID",sessionid.(string))
+		(*r).Header.Set("UserID",userid)
+	}
+	return
 }
 
 func BasicAuth(w http.ResponseWriter, r *http.Request){
