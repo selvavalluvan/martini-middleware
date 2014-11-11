@@ -18,7 +18,6 @@ type loggedinusers tools.Loggedinusers
 type users tools.Users
 
 
-
 func SessionAuth(session sessions.Session,w http.ResponseWriter, r *http.Request){
 	c := appengine.NewContext(r)
 	sessionid :=session.Get("SID")
@@ -31,7 +30,6 @@ func SessionAuth(session sessions.Session,w http.ResponseWriter, r *http.Request
 		fmt.Fprint(w,err)
 		return
 	}
-
 	userid := strconv.FormatInt(currentuser[0].UID, 10)
 
 	if(userid=="0" || userid==""){
