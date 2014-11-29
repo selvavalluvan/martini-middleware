@@ -15,7 +15,7 @@ import (
   )
 
 
-type loggedinusers tools.Loggedinusers
+type loggedinusers tools.LoggedInUsers
 type users tools.Users
 
 
